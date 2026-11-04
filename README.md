@@ -1,253 +1,323 @@
-# 🏛️ Barangay Case Management Database
+# ⚖️ LUPON Database
+### *Organizing Records. Supporting Justice. Strengthening Communities.*
 
-> 500 made-up complaints. 22 tables. 11 ready-made routines. Zero real people harmed. 🎉
+<p align="center">
+  <img src="https://img.shields.io/badge/Database-MySQL-blue?style=for-the-badge&logo=mysql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Tool-phpMyAdmin-orange?style=for-the-badge&logo=phpmyadmin&logoColor=white" />
+  <img src="https://img.shields.io/badge/Environment-XAMPP-FB7A24?style=for-the-badge&logo=xampp&logoColor=white" />
+</p>
 
-Welcome! This package turns an **empty** `barangay_case_management_system1` database into a fully stocked playground, with cases that move through the whole Katarungang Pambarangay process: filing, mediation, conciliation, settlement and CTFA.
+Welcome to the **LUPON Database Repository!** 👋
 
----
+This repository contains the MySQL database for a Barangay Lupon Case Management System. It is designed to organize and manage records related to barangay dispute resolution under the **Katarungang Pambarangay**.
 
-## 📦 What's in the box?
-
-| File | What it does | Run it |
-|---|---|---|
-| `barangay_case_management_system1.sql` | Builds the 22 empty tables | First, once |
-| `seed_all_tables.sql` | Fills **every** table with sample data | Second, once |
-| `barangay_routines.sql` | Creates 1 function + 10 stored procedures | Third (safe to re-run) |
-| `barangay_queries.sql` | 33 ready-to-run `SELECT` queries | Any time |
+The database supports case management, complainant and respondent records, hearing schedules, settlement records, case progress tracking, SMS history, and reporting.
 
 ---
 
-## 🚀 Quick start (about 5 minutes)
+## 📌 Table of Contents
 
-Tick them off as you go ✅
-
-- [ ] Open **phpMyAdmin** and create an empty database named `barangay_case_management_system1`
-- [ ] Click the database, open the **Import** tab, and import `barangay_case_management_system1.sql`
-- [ ] Import `seed_all_tables.sql` the same way
-- [ ] Import `barangay_routines.sql` the same way
-- [ ] Open the **Routines** tab and check that you see **11** routines
-- [ ] Open the **SQL** tab and run `CALL sp_outcome_summary();` to see your first result 🎯
-
-> ⚠️ **Run the seed script only once.** A second run gives duplicate-ID errors. If you need a clean start, drop the database and begin again from step 1.
+- [🎯 Project Overview](#-project-overview)
+- [✨ Database Features](#-database-features)
+- [⚙️ Stored Functions and Procedures](#️-stored-functions-and-procedures)
+- [🛠️ Technologies Used](#️-technologies-used)
+- [🚀 Getting Started](#-getting-started)
+- [💻 Sample SQL Queries](#-sample-sql-queries)
+- [🔒 Project Notes](#-project-notes)
+- [⭐ Support the Project](#-support-the-project)
 
 ---
 
-## 🗺️ The journey of a case
+## 🎯 Project Overview
 
-Every one of the 500 cases ends up in exactly one of these four endings:
+The LUPON Database serves as the data storage foundation of a Barangay Lupon Case Management System.
 
-```
-                  📝 Complaint filed
-                         │
-        ┌────────────────┼──────────────────────┐
-        ▼                ▼                      ▼
-  🙈 Respondent     🤝 Mediation          ⚖️ Mediation fails
-  doesn't show      succeeds                    │
-        │                │                      ▼
-        ▼                ▼               👥 Pangkat is chosen
-  📜 Summon +       ✅ Amicable           and constituted
-  rescheduled       settlement                  │
-  hearing           (mediation)                 ▼
-                                         🗣️ Conciliation hearing
-                                          ┌──────┴──────┐
-                                          ▼             ▼
-                                   ✅ Amicable      📄 CTFA issued
-                                   settlement       (go to court)
-                                   (conciliation)
-```
+It provides an organized database structure for storing, retrieving, and maintaining records involved in barangay dispute resolution.
 
-### 📊 The sample data at a glance
+It also includes stored functions and procedures that support common database operations, such as retrieving case information, checking case stages, searching persons, monitoring hearing schedules, and generating reports.
 
-| Ending | Cases | Tables it touches |
-|---|---:|---|
-| 🙈 Respondent absent (FTA) | 125 | `notice_of_hearing_fta`, `summon` |
-| ✅ Settled in mediation | 125 | `notice_of_hearing_mediation`, `amicable_settlement_mediation`, `summon` |
-| ✅ Settled in conciliation | 125 | the three Pangkat notice tables, `amicable_settlement_conciliation` |
-| 📄 CTFA issued | 125 | the three Pangkat notice tables, `ctfa` |
-| **Total** | **500** | |
+**The goal is simple: Keep records organized and make case information easier to manage.**
 
-Plus: 26 case types, 4 roles, 12 Lupon members, 1 Punong Barangay, 12 user accounts and about 2,600 SMS messages. 📱
+## ✨ Database Features
 
----
-
-## 🎮 Routine cheat sheet
-
-Open the **SQL** tab, paste a line, press **Go**.
-
-| I want to... | Type this |
+| Feature | Description |
 |---|---|
-| See everything about case #1 | `CALL sp_case_summary(1);` |
-| Look up a case by its number | `CALL sp_case_by_number('2026-0001');` |
-| Watch a case's timeline | `CALL sp_case_timeline(1);` |
-| List all cases in a stage | `CALL sp_cases_by_stage('CTFA issued');` |
-| Find a person by name | `CALL sp_search_person('Santos');` |
-| See hearings in a date range | `CALL sp_hearings_between('2026-10-01', '2026-11-30');` |
-| Read the texts sent for a case | `CALL sp_sms_history(1);` |
-| Get a monthly report | `CALL sp_monthly_report(2026);` |
-| See who handles the most cases | `CALL sp_pangkat_workload();` |
-| Get the grand totals | `CALL sp_outcome_summary();` |
-| Ask what stage a case is in | `SELECT fn_case_stage(1);` |
+| 👤 Complainant Records | Stores complainant information and contact details. |
+| 👥 Respondent Records | Stores respondent information and contact details. |
+| 📁 Case Management | Stores complaint information and barangay case numbers. |
+| 📍 Address Management | Maintains separate address records for complainants and respondents. |
+| 📅 Hearing Management | Stores hearing schedules, types, and statuses. |
+| 🤝 Settlement Records | Maintains mediation and conciliation settlement records. |
+| 📜 Case Progress Tracking | Supports monitoring of case stages and updates. |
+| 📱 SMS History | Stores SMS communication records related to cases. |
+| 📊 Reports | Supports case statistics, outcome summaries, and Pangkat workload monitoring. |
+| ⚙️ Stored Routines | Provides reusable database operations through stored functions and procedures. |
 
-<details>
-<summary>🏷️ <b>Valid stage names</b> (click to open)</summary>
+## ⚙️ Stored Functions and Procedures
 
-Use these exactly as written with `sp_cases_by_stage`:
+The database includes one stored function and ten stored procedures to support different database operations.
 
-- `Filed`
-- `Respondent absent - rescheduled`
-- `For mediation`
-- `Settled in mediation`
-- `For conciliation`
-- `Settled in conciliation`
-- `CTFA issued`
+### 🔹 Stored Function
 
-</details>
-
-<details>
-<summary>💡 <b>Parameter tips</b></summary>
-
-- Numbers (case IDs, years) go in **without** quotes: `CALL sp_case_summary(25);`
-- Text and dates go **in** quotes: `'2026-0001'`, `'2026-10-01'`
-- Dates use **year-month-day**
-- `sp_pangkat_workload()` and `sp_outcome_summary()` need nothing between the brackets
-
-</details>
-
----
-
-## 🧭 "I want to know..." finder
-
-| Question | Where to look |
+| Function | Purpose |
 |---|---|
-| How many rows does each table have? | Query 1 in `barangay_queries.sql` |
-| Which case type is the most common? | Query 4 |
-| Which barangay files the most complaints? | Query 7 |
-| How long do cases take to resolve? | Query 26 |
-| Whose phone number failed to get the SMS? | Query 22 |
-| Is my data consistent? | Query 33 (the health check) 🩺 |
-| Which scheduled hearings are overdue? | Query 32 |
+| `fn_case_stage()` | Determines the current recorded stage of a complaint based on its related records. |
 
-Queries are in the file in the same order as this list's numbers. Run them **one at a time**, because phpMyAdmin only shows the last result when you run many at once.
+### 🔹 Stored Procedures
+
+| Stored Procedure | Purpose |
+|---|---|
+| `sp_case_summary()` | Retrieves detailed case information, including parties, addresses, schedules, and tracking information. |
+| `sp_case_by_number()` | Retrieves case information using a barangay case number. |
+| `sp_case_timeline()` | Displays the recorded sequence of events in a case. |
+| `sp_cases_by_stage()` | Retrieves cases based on their current stage. |
+| `sp_search_person()` | Searches complainants and respondents by name. |
+| `sp_hearings_between()` | Retrieves hearing schedules within a specified date range. |
+| `sp_sms_history()` | Retrieves SMS communication history for a specific case. |
+| `sp_monthly_report()` | Generates a monthly case report for a selected year. |
+| `sp_pangkat_workload()` | Displays the number of conciliation cases assigned to Pangkat members. |
+| `sp_outcome_summary()` | Summarizes recorded case outcomes. |
+
+<details>
+<summary>📖 Explore the case stages</summary>
+
+The `fn_case_stage()` function checks related case records and returns one of the following stages:
+
+- Filed
+- CTFA issued
+- Settled in conciliation
+- For conciliation
+- Settled in mediation
+- For mediation
+- Respondent absent - rescheduled
+
+</details>
+
+## 🛠️ Technologies Used
+
+- **MySQL** – Relational database management system.
+- **phpMyAdmin** – Database administration and management.
+- **XAMPP** – Local development environment.
+- **SQL** – Database queries, stored functions, and stored procedures.
+
+## 🚀 Getting Started
+
+Ready to explore the database? Follow these steps!
+
+### 1. Prepare the Environment
+
+- Install [XAMPP](https://www.apachefriends.org/).
+- Open XAMPP Control Panel.
+- Start **Apache** and **MySQL**.
+
+### 2. Open phpMyAdmin
+
+Visit:
+
+```text
+http://localhost/phpmyadmin
+```
+
+### 3. Create the Database
+
+Create a new database named:
+
+```sql
+CREATE DATABASE lupon_db;
+```
+
+### 4. Import the SQL Files
+
+If you are using separate SQL files:
+
+1. Select the `lupon_db` database.
+2. Click the **Import** tab.
+3. Import `schema.sql` first.
+4. Import `sample_data.sql` next.
+5. Import `barangay_routines.sql` last.
+6. Wait for each import process to finish.
+
+**Alternative:** You can import `lupon_db.sql` directly if it already contains the complete database structure and records.
+
+🎉 Your database is now ready to explore!
+
+## 💻 Sample SQL Queries
+
+Explore some of the important SQL queries used in the LUPON database. These examples demonstrate how records are retrieved, connected, monitored, and summarized.
+
+### 1. 📁 Retrieve Case Records
+
+Displays the main case information, including case number, case type, complainant, respondent, complaint details, and tracking status.
+
+```sql
+SELECT cf.Complaint_id, cf.Brgy_case_no, ct.Case_type,
+  CONCAT(co.Complainant_Fname, ' ', co.Complainant_Mname, ' ', co.Complainant_Lname) AS complainant,
+  CONCAT(re.Respondent_Fname, ' ', re.Respoondent_Mname, ' ', re.Respondent_Lname) AS respondent,
+  cf.Complaint_reason, cf.Relief, cf.Date_of_CreationCF,
+  cf.OfficialReceipt_no, tr.trackingtbl_status,
+  CONCAT(pb.PB_Fname, ' ', pb.PB_Lname) AS punong_barangay
+FROM complaint_form cf
+JOIN case_type ct ON ct.Case_type_id = cf.Case_type_id
+JOIN complainant co ON co.Complainant_id = cf.Complainant_id
+JOIN respondent re ON re.Respondent_id = cf.Respondent_id
+JOIN punong_barangay pb ON pb.PB_id = cf.PB_id
+LEFT JOIN tracking_tb tr ON tr.Complaint_id = cf.Complaint_id
+ORDER BY cf.Complaint_id;
+```
+
+### 2. 👥 Retrieve Complainant and Respondent Details
+
+Retrieves the personal information, contact numbers, and addresses of both parties involved in a case.
+
+```sql
+SELECT cf.Complaint_id, cf.Brgy_case_no,
+  CONCAT(co.Complainant_Fname, ' ', co.Complainant_Lname) AS complainant,
+  co.Contact_no AS complainant_contact,
+  CONCAT_WS(', ', ca.house_no, ca.street_name, ca.purok,
+    ca.barangay, ca.municipality_city, ca.province,
+    ca.postal_code) AS complainant_address,
+  CONCAT(re.Respondent_Fname, ' ', re.Respondent_Lname) AS respondent,
+  re.Contact_no AS respondent_contact,
+  CONCAT_WS(', ', ra.house_no, ra.street_name, ra.purok,
+    ra.barangay, ra.municipality_city, ra.province,
+    ra.postal_code) AS respondent_address
+FROM complaint_form cf
+JOIN complainant co ON co.Complainant_id = cf.Complainant_id
+JOIN comp_addr_tbl ca ON ca.comp_addr_id = co.comp_addr_id
+JOIN respondent re ON re.Respondent_id = cf.Respondent_id
+JOIN res_addr_tbl ra ON ra.res_addr_id = re.res_addr_id
+ORDER BY cf.Complaint_id;
+```
+
+### 3. 📜 Monitor Case Stages
+
+Determines the current recorded stage of each case based on its related notices, settlements, and Certificate to File Action (CTFA) records.
+
+```sql
+SELECT cf.Complaint_id, cf.Brgy_case_no,
+  CASE
+    WHEN c.CTFA_id IS NOT NULL THEN 'CTFA issued'
+    WHEN sc.ASC_id IS NOT NULL THEN 'Settled in conciliation'
+    WHEN cp.NoticeOfHearingCP_id IS NOT NULL THEN 'For conciliation'
+    WHEN sm.ASM_id IS NOT NULL THEN 'Settled in mediation'
+    WHEN mp.NoticeOfHearingMP_id IS NOT NULL THEN 'For mediation'
+    WHEN fta.NoticeOfHearing_FTA_id IS NOT NULL
+      THEN 'Respondent absent - rescheduled'
+    ELSE 'Filed'
+  END AS stage
+FROM complaint_form cf
+LEFT JOIN ctfa c ON c.Complaint_id = cf.Complaint_id
+LEFT JOIN amicable_settlement_conciliation sc
+  ON sc.Complaint_id = cf.Complaint_id
+LEFT JOIN notice_of_hearing_conciliation cp
+  ON cp.Complaint_id = cf.Complaint_id
+LEFT JOIN amicable_settlement_mediation sm
+  ON sm.Complaint_id = cf.Complaint_id
+LEFT JOIN notice_of_hearing_mediation mp
+  ON mp.Complaint_id = cf.Complaint_id
+LEFT JOIN notice_of_hearing_fta fta
+  ON fta.Complaint_id = cf.Complaint_id
+ORDER BY cf.Complaint_id;
+```
+
+### 4. 📅 View Upcoming Hearing Schedules
+
+Retrieves scheduled hearings set for today or future dates, including the case number, hearing type, time, complainant, and respondent.
+
+```sql
+SELECT cs.schedule_id, cf.Brgy_case_no,
+  cs.Hearing_type, cs.Hearing_date,
+  cs.Hearing_time, cs.Remarks,
+  CONCAT(co.Complainant_Fname, ' ', co.Complainant_Lname) AS complainant,
+  CONCAT(re.Respondent_Fname, ' ', re.Respondent_Lname) AS respondent
+FROM case_schedule cs
+JOIN complaint_form cf ON cf.Complaint_id = cs.Complaint_id
+JOIN complainant co ON co.Complainant_id = cf.Complainant_id
+JOIN respondent re ON re.Respondent_id = cf.Respondent_id
+WHERE cs.Schedule_status = 'Scheduled'
+  AND cs.Hearing_date >= CURDATE()
+ORDER BY cs.Hearing_date, cs.Hearing_time;
+```
+
+### 5. 📊 Count Cases by Case Type
+
+Shows the total number of recorded cases for each case type.
+
+```sql
+SELECT ct.Case_type_id, ct.Case_type,
+  COUNT(cf.Complaint_id) AS total_cases
+FROM case_type ct
+LEFT JOIN complaint_form cf
+  ON cf.Case_type_id = ct.Case_type_id
+GROUP BY ct.Case_type_id, ct.Case_type
+ORDER BY total_cases DESC, ct.Case_type;
+```
+
+### 6. 📆 Generate Monthly Case Reports
+
+Counts the number of cases filed per month based on their creation dates.
+
+```sql
+SELECT
+  DATE_FORMAT(Date_of_CreationCF, '%Y-%m') AS month_filed,
+  COUNT(*) AS total_cases
+FROM complaint_form
+GROUP BY month_filed
+ORDER BY month_filed;
+```
+
+### 7. 🤝 Summarize Case Outcomes
+
+Provides a summary of recorded case outcomes, including failure to appear, mediation settlements, conciliation, and CTFA issuance.
+
+```sql
+SELECT 'Respondent absent (FTA)' AS outcome,
+  COUNT(*) AS total_cases
+FROM notice_of_hearing_fta
+
+UNION ALL
+
+SELECT 'Settled in mediation', COUNT(*)
+FROM amicable_settlement_mediation
+
+UNION ALL
+
+SELECT 'Referred to conciliation', COUNT(*)
+FROM notice_of_hearing_conciliation
+
+UNION ALL
+
+SELECT 'Settled in conciliation', COUNT(*)
+FROM amicable_settlement_conciliation
+
+UNION ALL
+
+SELECT 'CTFA issued', COUNT(*)
+FROM ctfa;
+```
+
+**Note:** These queries are based on the database tables and SQL statements in this repository. Results depend on the available records in the database.
 
 ---
 
-## 🗂️ The 22 tables
+## 🔒 Project Notes
 
-<details>
-<summary>👤 <b>People and places</b></summary>
+- This repository focuses on the database component of the LUPON Case Management System.
+- Use sample records for testing and demonstration.
+- Do not upload confidential personal information or actual case records.
+- Back up your database before making major changes.
+- Import stored routines only after the required database tables have been created.
+- Use the appropriate SQL file depending on whether you need the complete database or separate database components.
 
-`complainant`, `respondent`, `comp_addr_tbl`, `res_addr_tbl`, `punong_barangay`, `lupon_members`, `role_tb`, `user_tb`
+## ⭐ Support the Project
 
-</details>
+If you find this project useful, consider giving this repository a **star ⭐** on GitHub!
 
-<details>
-<summary>📝 <b>The case itself</b></summary>
-
-`complaint_form`, `case_type`, `case_schedule`, `tracking_tb`
-
-</details>
-
-<details>
-<summary>📬 <b>Notices and summons</b></summary>
-
-`notice_of_hearing_fta`, `notice_of_hearing_mediation`, `notice_of_hearing_conciliation`, `notice_chosen_pangkat`, `notice_constitution_pangkat`, `summon`
-
-</details>
-
-<details>
-<summary>🏁 <b>Outcomes</b></summary>
-
-`amicable_settlement_mediation`, `amicable_settlement_conciliation`, `ctfa`
-
-</details>
-
-<details>
-<summary>📱 <b>Messages</b></summary>
-
-`sms_log`: every SMS sent to or received from a complainant or respondent
-
-</details>
+Your support is appreciated.
 
 ---
 
-## 🔑 Test logins
-
-The 12 sample users come from the Lupon members. The pattern:
-
-| Part | Pattern | Example (member 1) |
-|---|---|---|
-| Username | first initial + last name | `rabellanosa` |
-| Email | username + `@barangay.gov.ph` | `rabellanosa@barangay.gov.ph` |
-| Password | `Brgy@` + member number + `#26` | `Brgy@01#26` |
-| Contact | `0917` + a number | `09170001111` |
-
-> 🚨 **These passwords are plain-text placeholders for testing only.** The `password` column is `varchar(11)`, which is too short for a hashed password. Before using this for real, widen the column (for example `varchar(255)`) and store hashes.
-
----
-
-## 🧯 Oops! Troubleshooting
-
-<details>
-<summary>❌ <b>"Duplicate entry ... for key PRIMARY"</b></summary>
-
-You ran the seed script a second time. Drop the database, recreate it empty, and import the files again in order.
-
-</details>
-
-<details>
-<summary>❌ <b>"FUNCTION fn_case_stage does not exist"</b></summary>
-
-The function wasn't created. Import `barangay_routines.sql` again, since it creates the function before the procedures that need it.
-
-</details>
-
-<details>
-<summary>❌ <b>Routines import fails near "DELIMITER"</b></summary>
-
-Use the **Import** tab, or paste into the **SQL** tab with the Delimiter box left as `;`. The file already contains its own `DELIMITER $$` lines.
-
-</details>
-
-<details>
-<summary>🤔 <b>I ran many queries and only see one result</b></summary>
-
-That's normal in phpMyAdmin. Run queries one at a time.
-
-</details>
-
-<details>
-<summary>😬 <b>I dropped a routine or a table by accident</b></summary>
-
-- Routine: import `barangay_routines.sql` again.
-- Table or database: rebuild from the original dump, then import the seed script and the routines again.
-
-</details>
-
----
-
-## 🧠 Mini quiz
-
-Test yourself. Answers are hidden. 🙈
-
-**1. Which routine shows the full story of one case, in date order?**
-<details><summary>Show answer</summary>`sp_case_timeline` ⏳</details>
-
-**2. A case has a CTFA. Which two tables prove it?**
-<details><summary>Show answer</summary>`ctfa` has the certificate, and `tracking_tb` shows the status `CTFA`.</details>
-
-**3. How many cases ended in each outcome?**
-<details><summary>Show answer</summary>125 each. 🎯</details>
-
-**4. What does `SELECT fn_case_stage(1);` return?**
-<details><summary>Show answer</summary>The current stage of case 1, such as `Settled in mediation`.</details>
-
----
-
-## 📝 Good to know
-
-- 🎭 **All data is fictional.** Names, addresses, phone numbers and messages were generated and are not real people.
-- 📅 Cases are dated from January to October 2026. The oldest cases have progressed furthest.
-- 🔁 Cases where the respondent didn't appear show `For Mediation` in `tracking_tb`, since they're waiting for the rescheduled hearing.
-- 🧪 Test everything on a copy of your database before using it for anything real.
-
-Happy querying! 🥳
+<p align="center">
+  <b>⚖️ LUPON Database</b><br>
+  <i>Building a more organized approach to barangay case management.</i>
+</p>
