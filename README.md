@@ -53,46 +53,6 @@ It also includes stored functions and procedures that support common database op
 | 📊 Reports | Supports case statistics, outcome summaries, and Pangkat workload monitoring. |
 | ⚙️ Stored Routines | Provides reusable database operations through stored functions and procedures. |
 
-## ⚙️ Stored Functions and Procedures
-
-The database includes one stored function and ten stored procedures to support different database operations.
-
-### 🔹 Stored Function
-
-| Function | Purpose |
-|---|---|
-| `fn_case_stage()` | Determines the current recorded stage of a complaint based on its related records. |
-
-### 🔹 Stored Procedures
-
-| Stored Procedure | Purpose |
-|---|---|
-| `sp_case_summary()` | Retrieves detailed case information, including parties, addresses, schedules, and tracking information. |
-| `sp_case_by_number()` | Retrieves case information using a barangay case number. |
-| `sp_case_timeline()` | Displays the recorded sequence of events in a case. |
-| `sp_cases_by_stage()` | Retrieves cases based on their current stage. |
-| `sp_search_person()` | Searches complainants and respondents by name. |
-| `sp_hearings_between()` | Retrieves hearing schedules within a specified date range. |
-| `sp_sms_history()` | Retrieves SMS communication history for a specific case. |
-| `sp_monthly_report()` | Generates a monthly case report for a selected year. |
-| `sp_pangkat_workload()` | Displays the number of conciliation cases assigned to Pangkat members. |
-| `sp_outcome_summary()` | Summarizes recorded case outcomes. |
-
-<details>
-<summary>📖 Explore the case stages</summary>
-
-The `fn_case_stage()` function checks related case records and returns one of the following stages:
-
-- Filed
-- CTFA issued
-- Settled in conciliation
-- For conciliation
-- Settled in mediation
-- For mediation
-- Respondent absent - rescheduled
-
-</details>
-
 ## 🛠️ Technologies Used
 
 - **MySQL** – Relational database management system.
